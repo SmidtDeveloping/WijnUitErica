@@ -1,0 +1,111 @@
+<aside id="sidebar" class="sidebar">
+    <ul class="sidebar-nav" id="sidebar-nav">
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/dashboard">
+          <i class="bi bi-grid"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/dashboard/users-profile">
+          <i class="bi bi-person"></i>
+          <span>Profiel</span>
+        </a>
+      </li>
+        <li class="nav-item">
+        <a class="nav-link collapsed" href="/dashboard/orderlist">
+          <i class="bi bi-list-ol"></i>
+          <span>Order List</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/dashboard/customers" class="nav-link collapsed">
+          <i class="bi bi-person-raised-hand"></i>
+          <span>Klantenoverzicht</span>
+        </a>
+      </li>
+
+      <% if (profile.roleHeight >= 2) { %>
+        <li class="nav-heading">Gebruikers Beheer</li>
+
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="/dashboard/create-user">
+            <i class="bi bi-person-add"></i>           
+             <span>Gebruiker Aanmaken</span>
+          </a>
+        </li>
+       
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="/dashboard/edit-user">
+            <i class="bi bi-person-gear"></i>
+                         <span>Gebruiker Aanpassen</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="/dashboard/delete-user">
+            <i class="bi bi-person-dash"></i>           
+             <span>Gebruiker Verwijderen</span>
+          </a>
+        </li>
+        
+        
+        <% } %>
+  
+        <% if (profile.roleHeight >= 2) { %>
+        <li class="nav-heading">Product Beheer</li>
+
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="/dashboard/create-product">
+            <i class="bi bi-plus"></i>           
+             <span>Product Aanmaken</span>
+          </a>
+        </li>
+       
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="/dashboard/edit-product">
+            <i class="bi bi-pencil"></i>
+                         <span>Product Aanpassen</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="/dashboard/delete-product">
+            <i class="bi bi-dash"></i>         
+             <span>Product Verwijderen</span>
+          </a>
+        </li>
+        
+        
+        <% } %>
+
+        <% if (profile.roleHeight >= 1) { %>
+        <li class="nav-heading">Vooraad Beheer</li>
+
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="/dashboard/stock-count">
+          <i class="bi bi-arrow-counterclockwise"></i>
+             <span>Voorraad Telling</span>
+          </a>
+        </li>
+       
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="/dashboard/stock-add">
+           <i class="bi bi-plus"></i>
+                         <span>Voorraad Bijboeken</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="/dashboard/stock-remove">
+                       <i class="bi bi-dash"></i>
+        
+             <span>Voorraad Afboeken</span>
+          </a>
+        </li>
+        
+        
+        <% } %>
+
+    </ul>
+
+  </aside>

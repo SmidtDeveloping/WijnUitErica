@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Dashboard</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <link href="/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+    rel="stylesheet">
+
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <%- include('../../partials/dashboardHeader') %>
+  <%- include('../../partials/dashboardNav') %>
+
+    <main id="main" class="main">
+
+      <div class="pagetitle">
+        <h1>Product Aanmaken</h1>
+        <nav>
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item">Product</li>
+            <li class="breadcrumb-item active">Aanmaken</li>
+          </ol>
+        </nav>
+      </div>
+
+      <% if (success) { %>
+        <div class="alert alert-success" role="alert">
+          <%= success %>
+        </div>
+        <% } %>
+
+          <% if (error) { %>
+            <div class="alert alert-danger" role="alert">
+              <%= error %>
+            </div>
+            <% } %>
+
+              <section class="section dashboard">
+                <div class="row">
+
+                  <!-- Left side columns -->
+                  <div class="col-lg-8">
+                    <div class="row">
+
+                      <!-- Sales Card -->
+                      <div class="col-xxl-20 col-md-20">
+                        <div class="card">
+                          <div class="card-body">
+
+                            <form action="/dashboard/create-product" method="POST">
+                              <br>
+                              <div class="mb-3">
+                                <label for="naam" class="form-label">Naam:</label>
+                                <input class="form-control" type="text" id="naam" name="naam" required>
+                              </div>
+
+                              <div class="mb-3">
+                                <label for="description" class="form-label">Beschrijving:</label>
+                                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                              </div>
+
+                              <div class="mb-3">
+                                <label for="vooraad" class="form-label">Voorraad:</label>
+                                <input class="form-control" type="number" id="vooraad" name="vooraad" min="0" required>
+                              </div>
+
+                              <div class="mb-3">
+                                <label for="prijs" class="form-label">Prijs (€):</label>
+                                <input class="form-control" type="number" step="0.01" id="prijs" name="prijs" required>
+                              </div>
+
+                              <div class="mb-3">
+                                <label for="smaakprofiel" class="form-label">Smaakprofiel (kommagescheiden):</label>
+                                <input class="form-control" type="text" id="smaakprofiel" name="smaakprofiel">
+                              </div>
+
+                              <div class="mb-3">
+                                <label for="img" class="form-label">Afbeelding (URL):</label>
+                                <input class="form-control" type="text" id="img" name="img">
+                              </div>
+
+                              <div class="mb-3 form-check">
+                                <input class="form-check-input" type="checkbox" id="nieuw" name="nieuw">
+                                <label class="form-check-label" for="nieuw">Nieuw product?</label>
+                              </div>
+
+                              <div class="mb-3">
+                                <label for="cat" class="form-label">Categorie:</label>
+                                <select class="form-control" id="cat" name="cat" multiple required>
+                                  <% cats.forEach(cat=> { %>
+                                    <option value="<%= cat._id %>">
+                                      <%= cat.name %>
+                                    </option>
+                                    <% }) %>
+                                </select>
+                              </div>
+
+                              <button type="submit" class="btn btn-success">Maak Product</button>
+                            </form>
+                            <br>
+                            <a href="/dashboard" class="btn btn-primary">Terug naar dashboard</a>
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+
+
+                </div>
+              </section>
+
+    </main>
+
+
+
+
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+        class="bi bi-arrow-up-short"></i></a>
+
+    <script src="/vendor/apexcharts/apexcharts.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/chart.js/chart.umd.js"></script>
+    <script src="/vendor/echarts/echarts.min.js"></script>
+    <script src="/vendor/quill/quill.js"></script>
+    <script src="/vendor/simple-datatables/simple-datatables.js"></script>
+    <script src="/vendor/tinymce/tinymce.min.js"></script>
+    <script src="/vendor/php-email-form/validate.js"></script>
+
+
+    <script src="/js/main.js"></script>
+
+</body>
+
+</html>

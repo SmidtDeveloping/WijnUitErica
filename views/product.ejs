@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= product.naam %>
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styling.css" class="css">
+</head>
+
+<body>
+    <%- include("partials/nav") %>
+
+
+        <section id="hero" class="hero d-flex flex-column align-items-center justify-content-center text-center">
+            <h1 class="display-3 text-black mb-3 fw-bold">
+                <%= product.naam %>
+            </h1>
+            <p class="lead text-black mb-5 fw-light">
+                <%= product.description %>
+            </p>
+
+        </section>
+
+        <section class="py-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <!-- Product afbeelding -->
+                    <div class="col-12 col-md-6 mb-4 mb-md-0 text-center">
+                        <img src="<%= product.img %>" class="img-fluid rounded shadow-lg" alt="<%= product.naam %>">
+                    </div>
+
+                    
+
+                    <!-- Product info -->
+                    <div class="col-12 col-md-6 text-center text-md-start">
+
+                               <% product.cat.forEach(cat=> { %>
+                    <span class="badge rounded-pill bg-primary">
+                      <%= cat.name %>
+                    </span>
+                    <% }) %>
+                        <h2 class="fw-bold mb-3">
+                            <%= product.naam %>
+                        </h2>
+                        <p class="mb-3">
+                            <%= product.description %>
+                        </p>
+
+                        <!-- Badges -->
+                        <div class="mb-3">
+                            <% if (product.nieuw) { %>
+                                <span class="badge rounded-pill bg-success">NIEUW</span>
+                                <% } %>
+                        </div>
+
+                        <!-- Smaakprofiel -->
+                        <div class="mb-3">
+                            <% product.smaakprofiel.forEach(smaak=> { %>
+                                <span class="badge text-bg-primary me-1">
+                                    <%= smaak %>
+                                </span>
+                                <% }) %>
+                        </div>
+                      
+
+                        <!-- Prijs + winkelmand knop -->
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <% if (product.actieprijs && !isNaN(Number(product.actieprijs))) { %>
+                                <span class="fw-bold fs-5 text-muted text-decoration-line-through">€<%= product.prijs %>
+                                </span>
+                                <span class="fw-bold fs-3 text-danger">€<%= product.actieprijs %></span>
+                                <% } else { %>
+                                    <span class="fw-bold fs-3 text-danger">€<%= product.prijs %></span>
+                                    <% } %>
+                                        <form action="/cart/add" method="POST" class="d-flex align-items-center gap-2">
+                                            <input type="hidden" name="id" value="<%= product.id %>">
+                                            <input type="hidden" name="name" value="<%= product.naam %>">
+                                            <input type="hidden" name="price" value="<%= product.prijs %>">
+
+                                            <input type="number" name="quantity" value="1" min="1"
+                                                class="form-control form-control-sm" style="width:70px;">
+
+                                            <button type="submit" class="btn btn-primary btn-lg">
+                                                <i class="bi bi-cart-plus"></i> In winkelmand
+                                            </button>
+                                        </form>
+                        </div>
+
+
+                    </div>
+                </div>
+
+
+
+            </div>
+        </section>
+
+
+        <%- include("partials/footer") %>
+
+
+
+</body>
+
+</html>

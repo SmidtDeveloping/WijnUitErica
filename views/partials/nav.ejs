@@ -1,0 +1,26 @@
+<header>
+    <div class="container d-flex justify-content-between align-items-center">
+        <h1 class="logo">Wijn Uit Erica</h1>
+        <nav>
+            <ul class="nav">
+                <li class="nav-item">
+                    <a href="/" class="nav-link px-3 py-2 rounded">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/producten" class="nav-link px-3 py-2 rounded">Wijnen</a>
+                </li>
+                <li class="nav-item">
+                    <a href="/winkelmandje" class="nav-link px-3 py-2 rounded position-relative">
+                        <i class="bi bi-cart"></i> Winkelmandje
+                        <% if(session.cart && session.cart.length> 0) { %>
+                            <span
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                <%= session.cart.reduce((acc, i)=> acc + i.quantity, 0) %>
+                            </span>
+                            <% } %>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>

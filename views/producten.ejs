@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WijnUitErica - Producten</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styling.css" class="css">
+  <style>
+    .card-img-top {
+      height: 300px;
+      object-fit: cover;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <%- include("partials/nav") %>
+
+
+    <section id="hero" class="hero d-flex flex-column align-items-center justify-content-center text-center">
+      <h1 class="display-3 text-black mb-3 fw-bold">Producten</h1>
+      <p class="lead text-black mb-5 fw-light">Eigen wijn gemaakt in Erica</p>
+    </section>
+
+    <section class="d-flex flex-row align-items-center justify-content-center text-center gap-3">
+      <button class="btn btn-danger">Alle Wijnen</button>
+      <button class="btn btn-primary">Witte Wijnen</button>
+      <button class="btn btn-primary">Rode Wijnen</button>
+      <button class="btn btn-primary">Speciale Wijnen</button>
+    </section>
+
+    <div class="container my-5">
+      <div class="row g-4">
+        <% producten.forEach(product=> { %>
+          <div class="col-12 col-md-6 col-lg-4 card-container">
+            <div class="card h-100">
+              <img src="<%= product.img %>" class="card-img-top img-fluid" alt="<%= product.naam %>">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <%= product.naam %>
+                </h5>
+                <p class="card-text">
+                  <%= product.description %>
+                </p>
+
+                <div class="position-absolute d-flex gap-1" style="top: -12px; right: 0;">
+                  <% product.cat.forEach(cat=> { %>
+                    <span class="badge rounded-pill bg-primary">
+                      <%= cat.name %>
+                    </span>
+                    <% }) %>
+                      <% if (product.populair) { %>
+                        <span class="badge rounded-pill bg-danger">POPULAIR</span>
+                        <% } %>
+                          <% if (product.nieuw) { %>
+                            <span class="badge rounded-pill bg-danger">NIEUW</span>
+                            <% } %>
+                </div>
+
+                <% product.smaakprofiel.forEach(smaak=> { %>
+                  <span class="badge text-bg-primary">
+                    <%= smaak %>
+                  </span>
+                  <% }) %>
+
+                    <br><br>
+                    <div class="d-flex align-items-center justify-content-between mt-2">
+                      <a href="/product/<%= product.id %>" class="btn btn-primary">Bekijk</a>
+
+                      <% if (product.actieprijs && product.actieprijs !=="" ) { %>
+                        <div class="text-end">
+                          <span class="text-decoration-line-through text-muted me-2">€<%= product.prijs %></span>
+                          <span class="fw-bold text-danger">€<%= product.actieprijs %></span>
+                        </div>
+                        <% } else { %>
+                          <span class="fw-bold">€<%= product.prijs %></span>
+                          <% } %>
+                    </div>
+                    
+
+              </div>
+            </div>
+          </div>
+          <% }) %>
+      </div>
+    </div>
+
+    <%- include("partials/footer") %>
+
+
+
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const buttons = document.querySelectorAll("section button");
+          const productCols = document.querySelectorAll(".card-container");
+
+          buttons.forEach(button => {
+            button.addEventListener("click", () => {
+              const filter = button.textContent.trim();
+
+              productCols.forEach((col, i) => {
+                const catBadge = col.querySelector(".badge.bg-primary");
+                const catText = catBadge ? catBadge.textContent.trim().split(" ")[0] : "";
+                let match = false;
+                if (filter === "Alle Wijnen") match = true;
+                if (filter.includes("Witte") && catText === "Witte") match = true;
+                if (filter.includes("Rode") && catText === "Rode") match = true;
+                if (filter.includes("Speciale") && catText === "Speciale") match = true;
+
+                if (match) {
+                  col.style.display = "block";
+                  requestAnimationFrame(() => {
+                    col.style.opacity = "1";
+                    col.style.transform = "translateY(0)";
+                  });
+                } else {
+                  col.style.opacity = "0";
+                  col.style.transform = "translateY(30px)";
+                  setTimeout(() => {
+                    col.style.display = "none";
+                  }, 200);
+                }
+              });
+            });
+          });
+        });
+      </script>
+
+
+
+
+
+</body>
+
+
+
+</html>

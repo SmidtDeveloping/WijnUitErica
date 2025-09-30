@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Dashboard</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+    rel="stylesheet">
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+  <%- include('../partials/dashboardHeader') %>
+    <%- include('../partials/dashboardNav') %>
+
+      <main id="main" class="main">
+        <div class="pagetitle">
+          <h1>Dashboard</h1>
+          <br>
+          <nav>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
+          </nav>
+        </div>
+
+        <section class="section dashboard">
+          <div class="row">
+
+            <div class="col-lg-8">
+              <div class="row">
+
+                <div class="col-12">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">Product Overzicht</h5>
+
+                      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3">
+                        <% if (products && products.length> 0) { %>
+                          <% products.forEach(product=> { %>
+                            <div class="col-md-4 mb-3">
+                              <div class="card h-100 shadow-sm">
+                                <div class="card-body">
+                                  <h6 class="card-title">
+                                    <%= product.naam %>
+                                  </h6>
+                                  <p class="card-text">
+                                    <strong>Prijs:</strong> €<%= (product.prijs).toFixed(2) %><br>
+                                      <strong>Voorraad:</strong>
+                                      <%= product.vooraad %>
+                                  </p>
+                                  <a href="/dashboard/edit-product?product=<%= product._id %>"
+                                    class="btn btn-success">Bewerk</a>
+
+                                </div>
+
+                              </div>
+                            </div>
+                            <% }) %>
+                              <% } else { %>
+                                <p class="text-muted">Geen producten gevonden.</p>
+                                <% } %>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">Laatste Transacties</h5>
+                      <table class="table datatable">
+                        <thead>
+                          <tr>
+                            <th>Klant</th>
+                            <th>Datum</th>
+                            <th>Bedrag</th>
+                            <th>Totale Korting</th>
+                            <th>Aantaal Producten</th>
+                            <th>Status</th>
+                            <th>Bekijk</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% orders.forEach(order=> { %>
+                            <tr>
+                              <td>
+                                <%= order.customer_details.name %>
+                              </td>
+                              <td>
+                                <%= new Date(order.created * 1000).toLocaleDateString('nl-NL') %>
+                              </td>
+
+                              <td>
+                                <%= order.amount_total %>
+                              </td>
+
+                              <td>
+                                <%= order.total_details.amount_discount %>
+                              </td>
+                              <td>
+                                <%= order.productCount %>
+                              </td>
+                              <td>
+                                <%= order.payment_status %>
+                              </td>
+
+                              <td><a href="/dashboard/vieworder/<%= order.id %>">Bekijk Order</a></td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+
+
+
+            </div>
+            <div class="col-lg-4">
+              <div class="card info-card">
+                <div class="card-body">
+                  <h5 class="card-title">Snelle Acties</h5>
+                  <a class="btn btn-primary w-100 mb-2" href="/dashboard/create-product">Nieuw Product Aanmaken</a>
+                  <a class="btn btn-secondary w-100 mb-2" href="/dashboard/customers">Klantenoverzicht</a>
+                  <a class="btn btn-success w-100" href="">Rapport downloaden</a>
+                </div>
+              </div>
+            </div>
+
+
+        </section>
+      </main>
+
+      <a href="#" class="back-to-top d-flex align-items-center justify-content-center">
+        <i class="bi bi-arrow-up-short"></i>
+      </a>
+
+      <script src="vendor/simple-datatables/simple-datatables.js"></script>
+      <script src="vendor/tinymce/tinymce.min.js"></script>
+      <script src="js/main.js"></script>
+</body>
+
+</html>
