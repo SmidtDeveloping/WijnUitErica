@@ -62,8 +62,8 @@ router.get('/create-checkout-session', async (req, res) => {
     payment_method_types: ['card'],
     line_items,
     mode: 'payment',
-    success_url: 'http://localhost:1010/bedankt',
-    cancel_url: 'http://localhost:1010/cart',
+    success_url: 'https://wijnuiterica.onrender.com/bedankt',
+    cancel_url: 'https://wijnuiterica.onrender.com/cart',
     billing_address_collection: 'required',
      shipping_address_collection: {
     allowed_countries: ['NL', 'BE'],
