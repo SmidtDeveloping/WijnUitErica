@@ -254,6 +254,21 @@ router.get("/orderlist", isLoggedIn, checkRole(2), async (req, res) => {
   
 })
 
+router.get("/vieworder/:id", isLoggedIn, checkRole(2), async (req, res) => {
+  const sessionId = req.params.id
+  const session = await stripe.checkout.sessions.retrieve(sessionId, {
+    expand: ["line_items", "payment_intent", "customer_details"]
+  })
+  console.log(session)
+  if (!session) return res.redirect("/dashboard/orderlist")
+
+  res.render("dashboard/orders/vieworder", {order: session})
+  
+})
+
+router.get("/users-profile", isLoggedIn, async (req, res) => {
+  res.render("dashboard/profile")
+})
 
 
 

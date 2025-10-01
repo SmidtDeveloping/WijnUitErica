@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title><%= order.customer_details?.name %> - WijnUitErica</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+    rel="stylesheet">
+
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+
+  <link href="/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <%- include('../../partials/dashboardHeader') %>
+  <%- include('../../partials/dashboardNav') %>
+
+    <main id="main" class="main">
+
+      <div class="pagetitle">
+        <h1>Order Bekijken</h1>
+        <nav>
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+            <li class="breadcrumb-item">Vieworder</li>
+            <li class="breadcrumb-item active"><%= order.id %></li>
+          </ol>
+        </nav>
+      </div>
+
+      <section class="section dashboard">
+        <table class="table">
+    <thead>
+      <tr>
+        <th>Klant</th>
+        <th>Email</th>
+        <th>Datum</th>
+        <th>Bedrag</th>
+        <th>Status</th>
+        <th>Betaalmethode</th>
+        <th>Producten</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><%= order.customer_details?.name || 'Onbekend' %></td>
+          <td><%= order.customer_details?.email || 'Onbekend' %></td>
+          <td><%= new Date(order.created * 1000).toLocaleString() %></td>
+          <td>€<%= (order.amount_total / 100).toFixed(2) %></td>
+          <td><%= order.payment_status %></td>
+          <td>
+            <% if (order.payment_intent) { %>
+              <%= order.payment_intent.payment_method_types.join(", ") %>
+            <% } else { %>
+              -
+            <% } %>
+          </td>
+          <td>
+            <ul>
+              <% order.line_items.data.forEach(item => { %>
+                <li><%= item.description %> (x<%= item.quantity %>)</li>
+              <% }) %>
+            </ul>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      </section>
+
+    </main>
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+        class="bi bi-arrow-up-short"></i></a>
+</body>
+
+</html>
