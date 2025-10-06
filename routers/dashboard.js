@@ -1,9 +1,12 @@
 const dashboardUser = require('../models/dashboardUser');
+const dashboardRoles = require('../models/dashboardRoles');
+
 const db_product = require('../models/product')
 const productCats = require("../models/product_cat")
+
 const router = require('express').Router()
 const stripe = require("../stripeConnect")
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
 const uuidv4 = require("uuidv4").uuid
 
 
@@ -17,7 +20,7 @@ async function isLoggedIn(req, res, next) {
 function checkRole(height) {
   return (req, res, next) => {
     const user = req.session.user;
-    if (!user || user.roleHeight < height) return res.status(403).send("Geen Toegang");
+    if (!user || user.role.roleHeight < height) return res.status(403).send("Geen Toegang");
     return next();
   };
 }
@@ -29,7 +32,6 @@ router.get("/", isLoggedIn, async (req, res) => {
 
   const orders = await Promise.all(
     filteredSessions.map(async (session) => {
-      console.log(session);
       const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
       const totalQuantity = lineItems.data.reduce((sum, item) => sum + item.quantity, 0);
       return {
@@ -40,7 +42,6 @@ router.get("/", isLoggedIn, async (req, res) => {
   );
 
   const products = await db_product.find({}).populate("cat")
-
   res.render("dashboard/index", { orders, products });
 });
 
@@ -152,28 +153,30 @@ router.get("/customers", isLoggedIn, checkRole(2), async (req, res) => {
 });
 
 
-router.get("/create-user", isLoggedIn, checkRole(2), (req, res) => {
-    res.render("dashboard/users/create-user")
+router.get("/create-user", isLoggedIn, checkRole(2), async (req, res) => {
+    const cats = await dashboardRoles.find({}).sort({roleHeight: -1})
+    const {success, error} = req.body
+    res.render("dashboard/users/create-user", {cats, success, error})
 })
 
 router.post("/create-user", isLoggedIn, checkRole(2), async (req, res) => {
-    let { password, roleHeight, name } = req.body;
+    let { password, role, name } = req.body;
 
     try {
         password = await bcrypt.hash(password, 10)
 
         const user = new dashboardUser({
             password,
-            roleHeight,
+            role,
             id: uuidv4(),
             name
         })
 
         await user.save()
-        return res.redirect("/dashboard/create-user")
+        return res.redirect("/dashboard/create-user?success=User aangemaakt")
     } catch (error) {
         console.error(error)
-        return res.status(505).send("Error bij maken van gebruiker")
+        return res.redirect(`/dashboard/create-user?error=${error}`)
     }
 })
 
@@ -216,7 +219,6 @@ router.get("/delete-user", isLoggedIn, checkRole(2), async (req, res) => {
 
 router.post("/delete-user", isLoggedIn, checkRole(2), async (req, res) => {
     const userID = req.body.id
-    console.log(userID)
     try {
         await dashboardUser.findOneAndDelete(
             { id: userID }
@@ -257,9 +259,8 @@ router.get("/orderlist", isLoggedIn, checkRole(2), async (req, res) => {
 router.get("/vieworder/:id", isLoggedIn, checkRole(2), async (req, res) => {
   const sessionId = req.params.id
   const session = await stripe.checkout.sessions.retrieve(sessionId, {
-    expand: ["line_items", "payment_intent", "customer_details"]
+    expand: ["line_items", "payment_intent", "customer_details", "invoice"]
   })
-  console.log(session)
   if (!session) return res.redirect("/dashboard/orderlist")
 
   res.render("dashboard/orders/vieworder", {order: session})
@@ -270,6 +271,55 @@ router.get("/users-profile", isLoggedIn, async (req, res) => {
   res.render("dashboard/profile")
 })
 
+router.get("/stock-count", isLoggedIn, checkRole(1), async (req, res) => {
+  const products = await db_product.find()
+  const success = req.query.success
+  res.render("dashboard/stock/count", {products, success}) 
+})
+
+router.post("/stock-count", isLoggedIn, checkRole(1), async (req, res) => {
+  let counts = req.body.counts
+  counts = Object.entries(counts)
+  for (const [id, nieuwevoorraad] of counts) {
+    await db_product.findByIdAndUpdate(id, {vooraad: nieuwevoorraad})
+  }
+  res.redirect("/dashboard/stock-count?success=Producten geteld")
+})
+
+const db_promotion = require('../models/promotions')
+router.get("/promotions", isLoggedIn, checkRole(2), async (req, res) => {
+  const promotions = await db_promotion.find().populate("productIds");
+  const products = await db_product.find();
+  
+  res.render("dashboard/promotions/promotion", {products, promotions})
+})
+
+router.post("/promotions", async (req, res) => {
+  const { name, type, value, buyQuantity, getQuantity, productIds, validUntil } = req.body;
+  const promo = new db_promotion({
+    name,
+    type,
+    value,
+    buyQuantity: buyQuantity || null,
+    getQuantity: getQuantity || null,
+    productIds: Array.isArray(productIds) ? productIds : [productIds], 
+    validUntil: validUntil ? new Date(validUntil) : null
+  });
+  await promo.save();
+  res.redirect("/dashboard/promotions");
+});
+
+router.post("/promotions/:id/toggle", async (req, res) => {
+  const promo = await db_promotion.findById(req.params.id);
+  promo.active = !promo.active;
+  await promo.save();
+  res.redirect("/dashboard/promotions");
+});
+
+router.post("/promotions/:id/delete", async (req, res) => {
+  await db_promotion.findByIdAndDelete(req.params.id);
+  res.redirect("/dashboard/promotions");
+});
 
 
 

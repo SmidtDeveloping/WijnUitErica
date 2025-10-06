@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   id: {type: String, default: uuidv4, required: true},
   name: { type: String, required: true },
   password: String,
-  roleHeight: { type: Number, enum: [0, 1, 2, 3], default: 0 }
+  role: { type: mongoose.Schema.Types.ObjectId, ref: 'dashboardRoles' }
 });
 
 module.exports = mongoose.model('dashboardUser', userSchema);

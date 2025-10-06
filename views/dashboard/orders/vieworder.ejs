@@ -54,7 +54,7 @@
     <tbody>
         <tr>
           <td><%= order.customer_details?.name || 'Onbekend' %></td>
-          <td><%= order.customer_details?.email || 'Onbekend' %></td>
+          <td><a href="mailto:<%= order.customer_details?.email %>"><%= order.customer_details?.email || 'Onbekend' %></a></td>
           <td><%= new Date(order.created * 1000).toLocaleString() %></td>
           <td>€<%= (order.amount_total / 100).toFixed(2) %></td>
           <td><%= order.payment_status %></td>
@@ -75,6 +75,36 @@
         </tr>
     </tbody>
   </table>
+
+       <table class="table">
+    <thead>
+      <tr>
+        <th>Stad</th>
+        <th>Land</th>
+        <th>Adres line 1</th>
+        <th>Adres line 2</th>
+        <th>Postcode</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><%= order.customer_details?.address?.city || 'Onbekend' %></td>
+          <td><%= order.customer_details?.address?.country || 'Onbekend' %></td>
+          <td><%= order.customer_details?.address?.line1 || 'Onbekend' %></td>
+          <td><%= order.customer_details?.address?.line2 || 'Onbekend' %></td>
+          <td><%= order.customer_details?.address?.postal_code || 'Onbekend' %></td>
+        </tr>
+    </tbody>
+  </table>
+
+  <% if (order.invoice) { %>
+  <a href="<%= order.invoice.invoice_pdf %>" target="_blank" class="btn btn-primary">
+    📄 Download Factuur
+  </a>
+<% } else { %>
+  <span class="text-muted">Geen factuur beschikbaar</span>
+<% } %>
+
       </section>
 
     </main>

@@ -17,89 +17,87 @@
     <%- include("partials/nav") %>
 
 
-        <section id="hero" class="hero d-flex flex-column align-items-center justify-content-center text-center">
-            <h1 class="display-3 text-black mb-3 fw-bold">
-                <%= product.naam %>
-            </h1>
-            <p class="lead text-black mb-5 fw-light">
-                <%= product.description %>
-            </p>
 
-        </section>
 
         <section class="py-5">
             <div class="container">
-                <div class="row align-items-center">
-                    <!-- Product afbeelding -->
-                    <div class="col-12 col-md-6 mb-4 mb-md-0 text-center">
-                        <img src="<%= product.img %>" class="img-fluid rounded shadow-lg" alt="<%= product.naam %>">
+                <div class="row g-5 align-items-center">
+                    <div class="col-12 col-md-6 text-center">
+                        <div class="card border-0 shadow-lg">
+                            <img src="<%= product.img %>" class="card-img-top rounded" alt="<%= product.naam %>">
+                        </div>
                     </div>
 
-                    
-
-                    <!-- Product info -->
-                    <div class="col-12 col-md-6 text-center text-md-start">
-
-                               <% product.cat.forEach(cat=> { %>
-                    <span class="badge rounded-pill bg-primary">
-                      <%= cat.name %>
-                    </span>
-                    <% }) %>
-                        <h2 class="fw-bold mb-3">
-                            <%= product.naam %>
-                        </h2>
-                        <p class="mb-3">
-                            <%= product.description %>
-                        </p>
-
-                        <!-- Badges -->
+                    <div class="col-12 col-md-6">
                         <div class="mb-3">
-                            <% if (product.nieuw) { %>
-                                <span class="badge rounded-pill bg-success">NIEUW</span>
-                                <% } %>
-                        </div>
-
-                        <!-- Smaakprofiel -->
-                        <div class="mb-3">
-                            <% product.smaakprofiel.forEach(smaak=> { %>
-                                <span class="badge text-bg-primary me-1">
-                                    <%= smaak %>
+                            <% product.cat.forEach(cat=> { %>
+                                <span class="badge rounded-pill bg-primary me-1 mb-1">
+                                    <%= cat.name %>
                                 </span>
                                 <% }) %>
                         </div>
-                      
+                        <% if (product.nieuw) { %>
+                            <div class="mb-3">
+                                <span class="badge bg-success">NIEUW</span>
+                            </div>
+                            <% } %>
+                                <h2>
+                                    <%= product.naam %>
+                                </h2>
+                                <p>
+                                    <%= product.description %>
+                                </p>
 
-                        <!-- Prijs + winkelmand knop -->
-                        <div class="d-flex align-items-center gap-3 mb-4">
-                            <% if (product.actieprijs && !isNaN(Number(product.actieprijs))) { %>
-                                <span class="fw-bold fs-5 text-muted text-decoration-line-through">€<%= product.prijs %>
-                                </span>
-                                <span class="fw-bold fs-3 text-danger">€<%= product.actieprijs %></span>
-                                <% } else { %>
-                                    <span class="fw-bold fs-3 text-danger">€<%= product.prijs %></span>
-                                    <% } %>
-                                        <form action="/cart/add" method="POST" class="d-flex align-items-center gap-2">
-                                            <input type="hidden" name="id" value="<%= product.id %>">
-                                            <input type="hidden" name="name" value="<%= product.naam %>">
-                                            <input type="hidden" name="price" value="<%= product.prijs %>">
+                                <div class="mb-3">
+                                    <% product.smaakprofiel.forEach(smaak=> { %>
+                                        <span class="badge bg-info text-dark me-1 mb-1">
+                                            <%= smaak %>
+                                        </span>
+                                        <% }) %>
+                                </div>
 
-                                            <input type="number" name="quantity" value="1" min="1"
-                                                class="form-control form-control-sm" style="width:70px;">
+                                <div class="mb-4">
+                                    <% if (promotion && promoPrice) { %>
+                                        <p class="fs-4 mb-1">
+                                            <span class="text-muted text-decoration-line-through">
+                                                €<%= product.prijs.toFixed(2) %>
+                                            </span>
+                                            <span class="text-danger fw-bold ms-2">
+                                                €<%= promoPrice.toFixed(2) %>
+                                            </span>
+                                        </p>
+                                        <% } else { %>
+                                            <p class="fs-4 fw-bold">€<%= product.prijs.toFixed(2) %>
+                                            </p>
+                                            <% } %>
 
-                                            <button type="submit" class="btn btn-primary btn-lg">
-                                                <i class="bi bi-cart-plus"></i> In winkelmand
-                                            </button>
-                                        </form>
-                        </div>
+                                                <% if (promotion && promotion.type==="buy_x_get_y" ) { %>
+                                                    <span class="badge bg-warning text-dark fs-6">
+                                                        <%= promotion.buyQuantity %> + <%= promotion.getQuantity %>
+                                                                GRATIS!
+                                                    </span>
+                                                    <% } %>
+                                </div>
 
+                                <form action="/cart/add" method="POST" class="d-flex gap-3 align-items-center">
+                                    <input type="hidden" name="id" value="<%= product.id %>">
+                                    <input type="hidden" name="name" value="<%= product.naam %>">
 
+                                    <button type="submit" name="quantity" value="1"
+                                        class="btn btn-primary d-flex align-items-center">
+                                        <i class="bi bi-cart-plus me-2"></i> Fles (1)
+                                    </button>
+
+                                    <button type="submit" name="quantity" value="6"
+                                        class="btn btn-primary d-flex align-items-center">
+                                        <i class="bi bi-box me-2"></i> Doos (6)
+                                    </button>
+                                </form>
                     </div>
                 </div>
-
-
-
             </div>
         </section>
+
 
 
         <%- include("partials/footer") %>

@@ -15,7 +15,7 @@
         </li>
         <li class="nav-item pe-3">
           <kbd style="margin-right: 10px; padding-right: 0px;">
-            <%= session.user.name %>
+            <%= session.user.name %> - <%= session.user.role.roleName %>
           </kbd>
           <a class="btn btn-danger" href="/logout">Uitloggen</a>
         </li>

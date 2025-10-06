@@ -3,7 +3,7 @@ require("dotenv").config()
 const bodyParser = require('body-parser');
 const path = require("node:path")
 const session = require('express-session');
-const MongoStore = require('connect-mongo')
+const MongoStore = require('connect-mongo');
 const port = process.env.PORT
 const app = express()
 require("./dbConnect")(process.env.MONGOURL)
@@ -21,7 +21,7 @@ app.use(session({
   cookie: { secure: false }
 }));
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.enable('trust proxy');
 app.set('views', path.join(__dirname, 'views'));
@@ -38,11 +38,19 @@ app.use((req, res, next) => {
   next();
 });
 
+const sanitize = require("mongo-sanitize")
+
+app.use((req, res, next) => {
+  if (req.body) req.body = sanitize(req.body)
+  if (req.query) req.query = sanitize(req.query)
+  if (req.params) req.params = sanitize(req.params)
+  next()
+})
+
 
 app.use(require("./routers/index"))
 app.use(require("./routers/stripe"))
 app.use("/dashboard", require("./routers/dashboard"))
-
 
 
 

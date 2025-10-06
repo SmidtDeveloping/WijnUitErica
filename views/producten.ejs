@@ -60,6 +60,11 @@
                           <% if (product.nieuw) { %>
                             <span class="badge rounded-pill bg-danger">NIEUW</span>
                             <% } %>
+                                  <% if (product.promotion && product.promotion.type==="buy_x_get_y" ) { %>
+                        <span class="badge bg-danger">
+                          <%= product.promotion.buyQuantity %> + <%= product.promotion.getQuantity %> GRATIS!
+                        </span>
+                        <% } %>
                 </div>
 
                 <% product.smaakprofiel.forEach(smaak=> { %>
@@ -72,16 +77,22 @@
                     <div class="d-flex align-items-center justify-content-between mt-2">
                       <a href="/product/<%= product.id %>" class="btn btn-primary">Bekijk</a>
 
-                      <% if (product.actieprijs && product.actieprijs !=="" ) { %>
-                        <div class="text-end">
-                          <span class="text-decoration-line-through text-muted me-2">€<%= product.prijs %></span>
-                          <span class="fw-bold text-danger">€<%= product.actieprijs %></span>
-                        </div>
-                        <% } else { %>
-                          <span class="fw-bold">€<%= product.prijs %></span>
-                          <% } %>
+                      <p>
+                        <% if (product.promotion && product.promoPrice) { %>
+                          <span style="text-decoration: line-through; color: grey;">
+                            €<%= product.prijs.toFixed(2) %>
+                          </span>
+                          <span style="color: red; font-weight: bold;">
+                            €<%= product.promoPrice.toFixed(2) %>
+                          </span>
+                          <% } else { %>
+                            <span>€<%= product.prijs.toFixed(2) %></span>
+                            <% } %>
+                      </p>
+
+                
                     </div>
-                    
+
 
               </div>
             </div>

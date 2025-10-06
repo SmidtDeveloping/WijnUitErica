@@ -25,7 +25,17 @@
     <%- include('../../partials/dashboardNav') %>
 
       <main id="main" class="main">
+   <% if (success) { %>
+          <div class="alert alert-success" role="alert">
+            <%= success %>
+          </div>
+          <% } %>
 
+            <% if (error) { %>
+              <div class="alert alert-danger" role="alert">
+                <%= error %>
+              </div>
+              <% } %>
         <div class="pagetitle">
           <h1>Gebruiker Aanmaken</h1>
           <nav>
@@ -60,11 +70,13 @@
                         </div>
 
                         <div class="mb-3">
-                          <label class="form-label" for="roleHeight">Rol:</label>
-                          <select class="form-control" id="roleHeight" name="roleHeight" required>
-                            <option value="0">Bezoeker</option>
-                            <option value="1">Admin</option>
-                            <option value="2">Eigenaar</option>
+                          <label for="role" class="form-label">Role:</label>
+                          <select class="form-control" id="role" name="role" required>
+                            <% cats.forEach(cat=> { %>
+                              <option value="<%= cat._id %>">
+                                <%= cat.roleName %>
+                              </option>
+                              <% }) %>
                           </select>
                         </div>
 

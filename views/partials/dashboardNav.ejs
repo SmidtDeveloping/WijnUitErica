@@ -27,7 +27,7 @@
         </a>
       </li>
 
-      <% if (profile.roleHeight >= 2) { %>
+      <% if (profile.role.roleHeight >= 2) { %>
         <li class="nav-heading">Gebruikers Beheer</li>
 
         <li class="nav-item">
@@ -53,7 +53,7 @@
         
         <% } %>
   
-        <% if (profile.roleHeight >= 2) { %>
+        <% if (profile.role.roleHeight >= 2) { %>
         <li class="nav-heading">Product Beheer</li>
 
         <li class="nav-item">
@@ -79,7 +79,6 @@
         
         <% } %>
 
-        <% if (profile.roleHeight >= 1) { %>
         <li class="nav-heading">Vooraad Beheer</li>
 
         <li class="nav-item">
@@ -88,23 +87,20 @@
              <span>Voorraad Telling</span>
           </a>
         </li>
-       
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="/dashboard/stock-add">
-           <i class="bi bi-plus"></i>
-                         <span>Voorraad Bijboeken</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="/dashboard/stock-remove">
-                       <i class="bi bi-dash"></i>
         
-             <span>Voorraad Afboeken</span>
+          <% if (profile.role.roleHeight >= 2) { %>
+        <li class="nav-heading">Actie Beheer</li>
+
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="/dashboard/promotions">
+            <i class="bi bi-percent"></i>           
+             <span>Actie Beheer</span>
           </a>
         </li>
         
         
         <% } %>
+        
 
     </ul>
 

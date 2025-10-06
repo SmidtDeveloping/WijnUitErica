@@ -36,9 +36,10 @@
 
                             <% popular.forEach(product=> { %>
                                 <div class="col-6 col-md-6 col-lg-6">
-                                    <div class="card">
+                                    <div class="card h-100 d-flex flex-column">
                                         <img src="<%= product.img %>" class="card-img-top img-fluid"
-                                            alt="<%= product.naam %>">
+                                            alt="<%= product.naam %>" style="height: 200px; object-fit: cover;" />
+
                                         <div class="card-body">
                                             <h5 class="card-title">
                                                 <%= product.naam %>

@@ -11,7 +11,7 @@ const productSchema = new mongoose.Schema({
   img: String,
   nieuw: Boolean,
   prijs: Number,  
-  actieprijs: Number,
+  promotion: { type: mongoose.Schema.Types.ObjectId, ref: "Promotion" },
   cat: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }]
 });
 

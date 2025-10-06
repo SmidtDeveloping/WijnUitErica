@@ -56,6 +56,7 @@
                             <th>Bedrag</th>
                             <th>Betaalmethode</th>
                             <th>Producten</th>
+                            <th>Acties</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -85,6 +86,9 @@
                 <li><%= item.description %> (x<%= item.quantity %>)</li>
               <% }) %>
             </ul>
+          </td>
+          <td>
+            <a href="/dashboard/vieworder/<%= session.id %>" class="btn btn-primary">Bekijk Order</a>
           </td>
         </tr>
       <% }) %>
