@@ -4,6 +4,7 @@ const promotions = require("../models/promotions");
 const stripe = require("../stripeConnect");
 
 const router = require("express").Router()
+require("dotenv").config()
 
 router.post("/cart/add", async (req, res) => {
   const { id, quantity } = req.body;
