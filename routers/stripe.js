@@ -139,9 +139,33 @@ router.get("/bedankt", async (req, res) => {
   res.render("bedankt")
 })
 
-router.post("/webhooks/checkout", (req, res) => {
-  console.log(req.body.data)
-})
+router.post("/webhooks/checkout", async (req, res) => {
+  let event;
+
+  try {
+    const sig = req.headers["stripe-signature"];
+    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+  } catch (err) {
+    console.error("Webhook error:", err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+
+    const lineItems = await stripe.checkout.sessions.listLineItems(session.id, {
+      expand: ["data.price.product"],
+    });
+
+    console.log("Line items:", lineItems);
+
+    lineItems.data.forEach(item => {
+      console.log(`Product: ${item.description}, Aantal: ${item.quantity}, Prijs: ${item.amount_total / 100} ${item.currency}`);
+    });
+  }
+
+  res.json({ received: true });
+});
 
 
 module.exports = router
