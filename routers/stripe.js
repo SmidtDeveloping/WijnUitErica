@@ -2,10 +2,10 @@ const berekenPrijs = require("../helper/cardPromotie");
 const db_product = require("../models/product");
 const promotions = require("../models/promotions");
 const stripe = require("../stripeConnect");
-const express = require("express")
 
 const router = require("express").Router()
-require("dotenv").config()
+require("dotenv").config({path: "../.env"})
+
 router.post("/cart/add", async (req, res) => {
   const { id, quantity } = req.body;
   const qty = Number(quantity);
