@@ -139,6 +139,7 @@ router.get("/bedankt", async (req, res) => {
   res.render("bedankt")
 })
 
+
 router.post("/webhooks/checkout", async (req, res) => {
   let event;
   try {
@@ -149,7 +150,7 @@ router.post("/webhooks/checkout", async (req, res) => {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  if (event.type === "checkout.session.succeeded") {
+  if (event.type === "checkout.session.completed") {
     const session = event.data.object;
 
     const lineItems = await stripe.checkout.sessions.listLineItems(session.id, {
