@@ -145,7 +145,7 @@ router.post("/webhooks/checkout", express.raw({ type: 'application/json' }), asy
     const sig = req.headers["stripe-signature"];
     event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
-    console.error("Webhook error:", err.message);
+    console.error("Webhook error:", err);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
