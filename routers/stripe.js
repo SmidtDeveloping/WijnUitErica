@@ -106,7 +106,7 @@ router.get('/create-checkout-session', async (req, res) => {
   const line_items = cart.map(item => ({
     price_data: {
       currency: 'eur',
-      product_data: { name: `${item.name}` },
+      product_data: { name: `${item.name}`, metadata: { productId: item.id } },
       unit_amount: Math.round((item.prijs / item.quantity) * 100)
     },
     quantity: Math.min(parseInt(item.quantity) || 1, 1000)
@@ -153,27 +153,24 @@ router.post("/webhooks/checkout", async (req, res) => {
     const session = event.data.object;
 
     const lineItems = await stripe.checkout.sessions.listLineItems(session.id, {
-      expand: ["data.price.product"],
-    });
+  expand: ["data.price.product"],
+});
 
-    console.log("Line items:", lineItems);
+for (const item of lineItems.data) {
+  const productId = item.price.product.metadata.productId;
 
-    lineItems.data.forEach(async (item) => {
-      const product = await db_product.findOne({ naam: item.description })
+  const product = await db_product.findOne({id: productId})
 
-      if (product) {
-        product.vooraad -= item.quantity;
-        product.sales += item.quantity;
+  if (product) {
+    product.vooraad -= item.quantity;
+    product.sales += item.quantity;
+    await product.save();
 
-        await product.save();
-
-        console.log(
-          `Voorraad bijgewerkt: ${product.name}, nieuw stock = ${product.stock}, totaal verkocht = ${product.sales}`
-        );
-      } else {
-        console.log(`Product niet gevonden in DB: ${item.description}`);
-      }
-    });
+    console.log(`${product.naam}: voorraad nu ${product.vooraad}, verkocht ${product.sales}`);
+  } else {
+    console.log(`Product niet gevonden voor ID: ${productId}`);
+  }
+}
   }
 
   res.json({ received: true });
