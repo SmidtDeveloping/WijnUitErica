@@ -115,16 +115,18 @@ router.get('/create-checkout-session', async (req, res) => {
     payment_method_types: ['card'],
     line_items,
     mode: 'payment',
-    success_url: 'https://localhost:1010/bedankt?session_id={CHECKOUT_SESSION_ID}',
+    success_url: 'https://localhost:1010/bedankt',
     cancel_url: 'https://wijnuiterica.onrender.com/cart',
     billing_address_collection: 'required',
     shipping_address_collection: {
       allowed_countries: ['NL', 'BE'],
     },
-    customer_creation: "always",
     invoice_creation: {
       enabled: true,
     },
+    allow_promotion_codes: true,
+    customer_creation: "if_required"
+
 
   });
 
@@ -132,30 +134,13 @@ router.get('/create-checkout-session', async (req, res) => {
 });
 
 router.get("/bedankt", async (req, res) => {
-  const sessionId = req.query.session_id;
-  if (!sessionId) return res.redirect('/');
-  const session = await stripe.checkout.sessions.retrieve(sessionId, {
-    expand: ['line_items', 'payment_intent', 'invoice']
-  });
-  if (!session) return res.redirect('/');
-
-  if (session.payment_status === "paid") {
-    for (const item of session.line_items.data) {
-      const productId = item.price.product;
-      const quantity = item.quantity;
-
-      const product = await db_product.findById(productId);
-      if (!product) continue;
-
-      product.stock -= quantity;
-      product.sales += quantity;
-      await product.save();
-    }
-  }
-
   req.session.cart = []
 
   res.render("bedankt")
+})
+
+router.post("/webhooks/checkout", (req, res) => {
+  console.log(req.body)
 })
 
 
