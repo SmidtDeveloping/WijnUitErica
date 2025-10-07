@@ -2,10 +2,10 @@ const berekenPrijs = require("../helper/cardPromotie");
 const db_product = require("../models/product");
 const promotions = require("../models/promotions");
 const stripe = require("../stripeConnect");
+const express = require("express")
 
 const router = require("express").Router()
 require("dotenv").config()
-
 router.post("/cart/add", async (req, res) => {
   const { id, quantity } = req.body;
   const qty = Number(quantity);
@@ -140,7 +140,7 @@ router.get("/bedankt", async (req, res) => {
   res.render("bedankt")
 })
 
-router.post("/webhooks/checkout", async (req, res) => {
+router.post("/webhooks/checkout", express.raw({ type: 'application/json' }), async (req, res) => {
   let event;
 
   try {
