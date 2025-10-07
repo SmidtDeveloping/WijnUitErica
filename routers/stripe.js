@@ -149,7 +149,7 @@ router.post("/webhooks/checkout", async (req, res) => {
     console.error("Webhook error:", err);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
-
+  console.log(event.type)
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
 
