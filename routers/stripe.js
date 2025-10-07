@@ -140,7 +140,7 @@ router.get("/bedankt", async (req, res) => {
 })
 
 router.post("/webhooks/checkout", (req, res) => {
-  console.log(req.body)
+  console.log(req.body.data.line_items)
 })
 
 
