@@ -168,10 +168,10 @@ router.post("/webhooks/checkout", async (req, res) => {
         await product.save();
 
         console.log(
-          `✅ Voorraad bijgewerkt: ${product.name}, nieuw stock = ${product.stock}, totaal verkocht = ${product.sales}`
+          `Voorraad bijgewerkt: ${product.name}, nieuw stock = ${product.stock}, totaal verkocht = ${product.sales}`
         );
       } else {
-        console.log(`⚠️ Product niet gevonden in DB: ${item.description}`);
+        console.log(`Product niet gevonden in DB: ${item.description}`);
       }
     });
   }
