@@ -134,13 +134,13 @@ router.get('/create-checkout-session', async (req, res) => {
 });
 
 router.get("/bedankt", async (req, res) => {
+  if (!req.session.cart) return res.redirect("/winkelmandje")
   req.session.cart = []
-
   res.render("bedankt")
 })
 
 router.post("/webhooks/checkout", (req, res) => {
-  console.log(req.body.data.line_items)
+  console.log(req.body.data)
 })
 
 
