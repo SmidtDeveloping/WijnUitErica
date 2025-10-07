@@ -166,7 +166,6 @@ for (const item of lineItems.data) {
     product.sales += item.quantity;
     await product.save();
 
-    console.log(`${product.naam}: voorraad nu ${product.vooraad}, verkocht ${product.sales}`);
   } else {
     console.log(`Product niet gevonden voor ID: ${productId}`);
   }
