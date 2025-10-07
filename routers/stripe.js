@@ -135,15 +135,16 @@ router.get('/create-checkout-session', async (req, res) => {
 });
 
 router.get("/bedankt", async (req, res) => {
+  req.session.cart = []
   res.render("bedankt")
 })
 
-router.post("/webhooks/checkout", express.raw({ type: 'application/json' }), async (req, res) => {
+router.post("/webhooks/checkout", async (req, res) => {
   let event;
   console.log(req.body)
   try {
     const sig = req.headers["stripe-signature"];
-    event = stripe.webhooks.constructEvent(req.body, sig, "whsec_Fh1D10RjF7jBtFrS3rC6rEScetxmMQ5A");
+    event = stripe.webhooks.constructEvent(req.rawBody, sig, "whsec_Fh1D10RjF7jBtFrS3rC6rEScetxmMQ5A");
   } catch (err) {
     console.error("Webhook error:", err);
     return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -161,7 +162,6 @@ router.post("/webhooks/checkout", express.raw({ type: 'application/json' }), asy
     lineItems.data.forEach(item => {
       console.log(`Product: ${item.description}, Aantal: ${item.quantity}, Prijs: ${item.amount_total / 100} ${item.currency}`);
     });
-      req.session.cart = []
   }
 
   res.json({ received: true });

@@ -22,7 +22,13 @@ app.use(session({
 }));
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(
+    bodyParser.json({
+        verify: function(req, res, buf) {
+            req.rawBody = buf;
+        }
+    })
+);
 app.enable('trust proxy');
 app.set('views', path.join(__dirname, 'views'));
 app.set("view engine", "ejs");
