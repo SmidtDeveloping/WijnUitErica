@@ -4,7 +4,7 @@ const promotions = require("../models/promotions");
 const stripe = require("../stripeConnect");
 
 const router = require("express").Router()
-require("dotenv").config({path: "../.env"})
+require("dotenv").config({ path: "../.env" })
 
 router.post("/cart/add", async (req, res) => {
   const { id, quantity } = req.body;
@@ -149,7 +149,6 @@ router.post("/webhooks/checkout", async (req, res) => {
     console.error("Webhook error:", err);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
-  console.log(event.type)
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
 
@@ -159,8 +158,21 @@ router.post("/webhooks/checkout", async (req, res) => {
 
     console.log("Line items:", lineItems);
 
-    lineItems.data.forEach(item => {
-      console.log(`Product: ${item.description}, Aantal: ${item.quantity}, Prijs: ${item.amount_total / 100} ${item.currency}`);
+    lineItems.data.forEach(async (item) => {
+      const product = await db_product.findOne({ naam: item.description })
+
+      if (product) {
+        product.vooraad -= item.quantity;
+        product.sales += item.quantity;
+
+        await product.save();
+
+        console.log(
+          `✅ Voorraad bijgewerkt: ${product.name}, nieuw stock = ${product.stock}, totaal verkocht = ${product.sales}`
+        );
+      } else {
+        console.log(`⚠️ Product niet gevonden in DB: ${item.description}`);
+      }
     });
   }
 
