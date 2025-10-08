@@ -1,4 +1,5 @@
 const berekenPrijs = require("../helper/cardPromotie");
+const order = require("../models/order");
 const db_product = require("../models/product");
 const promotions = require("../models/promotions");
 const stripe = require("../stripeConnect");
@@ -125,6 +126,9 @@ router.get('/create-checkout-session', async (req, res) => {
     invoice_creation: {
       enabled: true,
     },
+    phone_number_collection: {
+      enabled: true,
+    },
     allow_promotion_codes: true,
     customer_creation: "if_required"
 
@@ -153,23 +157,48 @@ router.post("/webhooks/checkout", async (req, res) => {
     const session = event.data.object;
 
     const lineItems = await stripe.checkout.sessions.listLineItems(session.id, {
-  expand: ["data.price.product"],
-});
+      expand: ["data.price.product"],
+    });
 
-for (const item of lineItems.data) {
-  const productId = item.price.product.metadata.productId;
+    for (const item of lineItems.data) {
+      const productId = item.price.product.metadata.productId;
 
-  const product = await db_product.findOne({id: productId})
+      const product = await db_product.findOne({ id: productId })
 
-  if (product) {
-    product.vooraad -= item.quantity;
-    product.sales += item.quantity;
-    await product.save();
+      if (product) {
+        product.vooraad -= item.quantity;
+        product.sales += item.quantity;
+        await product.save();
 
-  } else {
-    console.log(`Product niet gevonden voor ID: ${productId}`);
-  }
-}
+        const newOrder = new order({
+          orderId: session.id,
+          customerId: session.customer,
+          name: session.customer_details?.name,
+          email: session.customer_details?.email,
+          address: session.customer_details?.address,
+
+          items: lineItems.data.map(item => ({
+            description: item.description,
+            quantity: item.quantity,
+            amount: item.amount_total,
+            currency: item.currency,
+          })
+          ),
+          subtotal: session.amount_subtotal,
+          total: session.amount_total,
+          discount: session.total_details?.amount_discount,
+          tax: session.total_details?.amount_tax,
+          invoiceId: session.invoice,
+          status: session.payment_status
+        })
+
+        await newOrder.save();
+
+
+      } else {
+        console.log(`Product niet gevonden voor ID: ${productId}`);
+      }
+    }
   }
 
   res.json({ received: true });

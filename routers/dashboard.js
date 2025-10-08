@@ -46,13 +46,13 @@ router.get("/", isLoggedIn, async (req, res) => {
 });
 
 router.get("/create-product", isLoggedIn, checkRole(2), async (req, res) => {
-  const {success, error} = req.query
+  const { success, error } = req.query
   const cats = await productCats.find({})
   res.render("dashboard/products/create-product", { cats, success, error })
 })
 
 router.get("/edit-product", isLoggedIn, checkRole(2), async (req, res) => {
-    const { success, error } = req.query;
+  const { success, error } = req.query;
   const products = await db_product.find({})
   const cats = await productCats.find({})
 
@@ -138,12 +138,22 @@ router.post("/delete-product", isLoggedIn, checkRole(2), async (req, res) => {
 router.get("/customers", isLoggedIn, checkRole(2), async (req, res) => {
   try {
     const customers = await stripe.customers.list({ limit: 100 });
-    const klanten = customers.data.map(customer => ({
+    const klantenRaw = customers.data.map(customer => ({
       name: customer.name || 'Onbekend',
       email: customer.email || 'Onbekend',
       phone: customer.phone || 'Onbekend',
       address: customer.address || null
     }));
+
+    const klanten = Object.values(
+      klantenRaw.reduce((acc, klant) => {
+        const key = `${klant.email}-${klant.name}`;
+        if (!acc[key]) {
+          acc[key] = klant;
+        }
+        return acc;
+      }, {})
+    );
 
     res.render("dashboard/customers", { klanten });
   } catch (err) {
@@ -154,81 +164,81 @@ router.get("/customers", isLoggedIn, checkRole(2), async (req, res) => {
 
 
 router.get("/create-user", isLoggedIn, checkRole(2), async (req, res) => {
-    const cats = await dashboardRoles.find({}).sort({roleHeight: -1})
-    const {success, error} = req.body
-    res.render("dashboard/users/create-user", {cats, success, error})
+  const cats = await dashboardRoles.find({}).sort({ roleHeight: -1 })
+  const { success, error } = req.body
+  res.render("dashboard/users/create-user", { cats, success, error })
 })
 
 router.post("/create-user", isLoggedIn, checkRole(2), async (req, res) => {
-    let { password, role, name } = req.body;
+  let { password, role, name } = req.body;
 
-    try {
-        password = await bcrypt.hash(password, 10)
+  try {
+    password = await bcrypt.hash(password, 10)
 
-        const user = new dashboardUser({
-            password,
-            role,
-            id: uuidv4(),
-            name
-        })
+    const user = new dashboardUser({
+      password,
+      role,
+      id: uuidv4(),
+      name
+    })
 
-        await user.save()
-        return res.redirect("/dashboard/create-user?success=User aangemaakt")
-    } catch (error) {
-        console.error(error)
-        return res.redirect(`/dashboard/create-user?error=${error}`)
-    }
+    await user.save()
+    return res.redirect("/dashboard/create-user?success=User aangemaakt")
+  } catch (error) {
+    console.error(error)
+    return res.redirect(`/dashboard/create-user?error=${error}`)
+  }
 })
 
 router.get("/edit-user", isLoggedIn, checkRole(2), async (req, res) => {
-    try {
-        const users = await dashboardUser.find({}, "id name roleHeight")
+  try {
+    const users = await dashboardUser.find({}, "id name roleHeight")
 
-        return res.render("dashboard/users/edit-user", {
-            users,
-        })
-    } catch (error) {
-        console.error(error)
-        return res.status(error.status).send("Fout bij ophalen gebruikers")
-    }
+    return res.render("dashboard/users/edit-user", {
+      users,
+    })
+  } catch (error) {
+    console.error(error)
+    return res.status(error.status).send("Fout bij ophalen gebruikers")
+  }
 })
 
 router.post("/update-user", isLoggedIn, checkRole(2), async (req, res) => {
-    let { id, name, roleHeight } = req.body
-    try {
-        await dashboardUser.findOneAndUpdate(
-            { id },
-            { name, roleHeight },
-            { new: true }
-        )
+  let { id, name, roleHeight } = req.body
+  try {
+    await dashboardUser.findOneAndUpdate(
+      { id },
+      { name, roleHeight },
+      { new: true }
+    )
 
-        return res.redirect("/dashboard/edit-user")
-    } catch (error) {
-        console.error(error)
-        return res.status(error.status).send("Fout bij updaten van gebruiker")
-    }
+    return res.redirect("/dashboard/edit-user")
+  } catch (error) {
+    console.error(error)
+    return res.status(error.status).send("Fout bij updaten van gebruiker")
+  }
 })
 
 router.get("/delete-user", isLoggedIn, checkRole(2), async (req, res) => {
-    const users = await dashboardUser.find({}, "id name roleHeight")
+  const users = await dashboardUser.find({}, "id name roleHeight")
 
-    res.render("dashboard/users/delete-user", {
-        users,
-    })
+  res.render("dashboard/users/delete-user", {
+    users,
+  })
 })
 
 router.post("/delete-user", isLoggedIn, checkRole(2), async (req, res) => {
-    const userID = req.body.id
-    try {
-        await dashboardUser.findOneAndDelete(
-            { id: userID }
-        )
+  const userID = req.body.id
+  try {
+    await dashboardUser.findOneAndDelete(
+      { id: userID }
+    )
 
-        res.redirect("/dashboard/delete-user")
-    } catch (error) {
-        console.error(error)
-        res.status(500).send("Fout bij het verwijderen van gebruiker")
-    }
+    res.redirect("/dashboard/delete-user")
+  } catch (error) {
+    console.error(error)
+    res.status(500).send("Fout bij het verwijderen van gebruiker")
+  }
 })
 
 router.get("/orderlist", isLoggedIn, checkRole(2), async (req, res) => {
@@ -240,20 +250,20 @@ router.get("/orderlist", isLoggedIn, checkRole(2), async (req, res) => {
     sessions = await Promise.all(
       paidFilter.map(async (session) => {
         const full = await stripe.checkout.sessions.retrieve(session.id, {
-           expand: ["line_items", "payment_intent", "customer_details"],
+          expand: ["line_items", "payment_intent", "customer_details"],
         })
         return full
       })
     )
 
 
-    res.render("dashboard/orders/orderlist", {sessions})
+    res.render("dashboard/orders/orderlist", { sessions })
 
   } catch (error) {
     res.status(500).send("Error bij ophalen orders")
     return console.log(error)
   }
-  
+
 })
 
 router.get("/vieworder/:id", isLoggedIn, checkRole(2), async (req, res) => {
@@ -263,8 +273,8 @@ router.get("/vieworder/:id", isLoggedIn, checkRole(2), async (req, res) => {
   })
   if (!session) return res.redirect("/dashboard/orderlist")
 
-  res.render("dashboard/orders/vieworder", {order: session})
-  
+  res.render("dashboard/orders/vieworder", { order: session })
+
 })
 
 router.get("/users-profile", isLoggedIn, async (req, res) => {
@@ -274,14 +284,14 @@ router.get("/users-profile", isLoggedIn, async (req, res) => {
 router.get("/stock-count", isLoggedIn, checkRole(1), async (req, res) => {
   const products = await db_product.find()
   const success = req.query.success
-  res.render("dashboard/stock/count", {products, success}) 
+  res.render("dashboard/stock/count", { products, success })
 })
 
 router.post("/stock-count", isLoggedIn, checkRole(1), async (req, res) => {
   let counts = req.body.counts
   counts = Object.entries(counts)
   for (const [id, nieuwevoorraad] of counts) {
-    await db_product.findByIdAndUpdate(id, {vooraad: nieuwevoorraad})
+    await db_product.findByIdAndUpdate(id, { vooraad: nieuwevoorraad })
   }
   res.redirect("/dashboard/stock-count?success=Producten geteld")
 })
@@ -290,8 +300,8 @@ const db_promotion = require('../models/promotions')
 router.get("/promotions", isLoggedIn, checkRole(2), async (req, res) => {
   const promotions = await db_promotion.find().populate("productIds");
   const products = await db_product.find();
-  
-  res.render("dashboard/promotions/promotion", {products, promotions})
+
+  res.render("dashboard/promotions/promotion", { products, promotions })
 })
 
 router.post("/promotions", async (req, res) => {
@@ -302,7 +312,7 @@ router.post("/promotions", async (req, res) => {
     value,
     buyQuantity: buyQuantity || null,
     getQuantity: getQuantity || null,
-    productIds: Array.isArray(productIds) ? productIds : [productIds], 
+    productIds: Array.isArray(productIds) ? productIds : [productIds],
     validUntil: validUntil ? new Date(validUntil) : null
   });
   await promo.save();
